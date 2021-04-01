@@ -105,7 +105,7 @@ function Create-Textbox ([string]$text, $x, $y, $fontSize){
 function Update-Timer () {
     if (($TimerState.status -eq 'stop') -or ($TimerState.status -eq 'suspend')) {return}
 
-    # Время истекло
+    # Time expired
     if ($TimerState.leftSeconds -le 0) {
         $TimerState.status = 'stop'
         $form.BackColor = 'red'
@@ -114,18 +114,16 @@ function Update-Timer () {
         return
     }
 
-    # Предупреждаем об истечении времени
+    # Time expiration warning
     if ($TimerState.leftSeconds -le $TimerState.warningSeconds) { $form.BackColor = 'yellow' }
 
-    # Уменьшаем время на секунду
+    # Time decrement on 1 second
     $TimerState.leftSeconds--
     $timeLabel.Text = Format-Seconds($TimerState.leftSeconds)
     $form.Text = 'S - стоп'
 }
 
 function Show-Timer (){
-    # $formatStartSeconds = Format-Seconds($TimerState.startSeconds)
-
     $form = Create-Form -text "" -x 400 -y 100 -width 170 -height 100
     $timeLabel = Create-Label -text $(Format-Seconds($TimerState.startSeconds)) -x 10 -y 10 -fontSize 30
     $newTime = Create-Textbox -text "" -x 10 -y 10 -fontSize 30
@@ -139,7 +137,7 @@ function Show-Timer (){
     $timer.start()
 
     $saveParameters = {
-        # Получение нового времени таймера из поля ввода
+        # Get new time from text box
         if ($_.KeyCode -eq "Enter") {
             $minSec = $newTime.Text.Split(":")
             $min = [int]$minSec[0]
@@ -159,7 +157,7 @@ function Show-Timer (){
 
     $startOrSetTimer = {
         if ($_.Button -eq 'Left') {
-            # Запускаем таймер по клику левой кнопкой
+            # Run timer by right button click
             if ($TimerState.status -eq 'stop') {
                 $TimerState.status = 'run'
                 $TimerState.leftSeconds = $TimerState.startSeconds
@@ -167,7 +165,7 @@ function Show-Timer (){
             }
         }
         if ($_.Button -eq 'Right') {
-            # Вводим новые значения времени для таймера. Enter - завершение ввода
+            # Input new values for timer. Press Enter to accept.
             $TimerState.status = 'suspend'
             $form.BackColor = 'gray'
             $form.Text = 'Enter - ввод'
@@ -178,7 +176,7 @@ function Show-Timer (){
     }
 
     $stopTimer = {
-        # Останавливаем таймер и переводим в начальное состояние по клавише s
+        # Stop and reset timer
         if ($_.KeyCode -eq "S") {
             $form.BackColor = 'gray'
             $form.Text = ""
